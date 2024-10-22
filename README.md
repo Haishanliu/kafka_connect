@@ -4,14 +4,24 @@ This script allows you to connect to a Kafka stream and store SPaT (Signal Phasi
 
 ## Usage
 
-To run the script, use the following command:
+### Step 1: Setp up environment varibales
 
-```bash
-python kafka_connect.py --output_folder <output_folder> --key <key> 
+Please put the setup_env_variable.sh file to this repo. Then run the following command. 
+
+``` bash 
+chmod + x ./setup_env_variable.sh
+source ./setup_env_variable.sh
+
 ```
+
+### Step 2: Run the script to store SPaT data
+To run the script kafka_consume.py, use the following command:
+
+I have saved all SpaT data into a signle csv, we can filter the information with Pytohn pandas laster. 
+
 Example command:
 ```bash
-python kafka_connect.py --output_folder 2024-10-11 --key ca-long-beach-052
+python kafka_consume.py -b pkc-rgm37.us-west-2.aws.confluent.cloud:9092 -s https://psrc-w7m1mm.us-west-2.aws.confluent.cloud -t calc.ntcip.gammas -g test-group
 ```
 
 ## more details
