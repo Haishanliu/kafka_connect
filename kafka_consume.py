@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import datetime
+from datetime import timezone, timedelta
 import argparse
 from functools import cached_property
 import io
@@ -35,6 +36,12 @@ class _AvroDS:
             return self.datum_reader.read(decoder)
         except Exception as e:
             return {'error': e}
+        
+def _convert_to_pst(ts):
+    ps = datetime.datetime.strptime(ts, '%Y-%m-%dT%H:%M:%S.%fZ').replace(tzinfo=timezone.utc)
+    # Convert to PST (UTC-8)
+    ps = ps.astimezone(timezone(timedelta(hours=-8)))
+    return ps
 
 def _dump_message(msg):
     target_keys = [
@@ -47,20 +54,25 @@ def _dump_message(msg):
     ts = msg.timestamp
 
     dmsg = datetime.datetime.fromtimestamp(int(round(ts / 1000, 0)), tz=datetime.timezone.utc)
-    dmsg = dmsg.astimezone(datetime.timezone(datetime.timedelta(hours=-7)))
+    dmsg = dmsg.astimezone(datetime.timezone(datetime.timedelta(hours=-8)))
 
     now = datetime.datetime.now(tz=datetime.timezone.utc)
-    now = now.astimezone(datetime.timezone(datetime.timedelta(hours=-7)))
+    now = now.astimezone(datetime.timezone(datetime.timedelta(hours=-8)))
 
     # extract the datetime from the message
     date = now.strftime('%Y-%m-%d')
     
     dt = (now - dmsg).total_seconds()
+    if dt > 60:
+        print(f"Skipping message for partition {msg.partition}, key: {msg.key}, value: {msg.value}, datetime: {dmsg}, now={now}, dt={dt})")
+        return
     file_exists = os.path.exists(f'./SPaT/{date}.csv')
     if msg.key in target_keys:
         print(f"Consumed message for partition {msg.partition}, key: {msg.key}, value: {msg.value}, datetime: {dmsg}, now={now}, dt={dt})")
         with open(f'./SPaT/{date}.csv', mode='a', newline='') as file:
             data = msg.value
+            data['phaseStart'] = _convert_to_pst(data['phaseStart'])
+            data['localZeroTime'] = _convert_to_pst(data['localZeroTime'])
             writer = csv.DictWriter(file, fieldnames=data.keys())
 
             # Write the header only if the file doesn't exist

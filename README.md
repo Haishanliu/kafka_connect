@@ -33,6 +33,9 @@ Here is the list of available intersection keys:
 * Roosevelt: ca-long-beach-049
 * Marshall: ca-long-beach-056
 
+## Note
+IN the kafka consume, I have convert the phaseStart and Local zero time to Pacific Time zone. Now -8.
+
 Quick Link to Corridor on [Google Maps](https://www.google.com/maps/place/Atlantic+%26+Bixby+SE/@33.8306672,-118.1949731,15z/data=!4m10!1m2!2m1!1sBixby+%26+Atlantic!3m6!1s0x80dd339849c22dfb:0x2e1fb0b345b7e155!8m2!3d33.827398!4d-118.184881!15sChBCaXhieSAmIEF0bGFudGljkgEIYnVzX3N0b3DgAQA!16s%2Fg%2F1tcxvk3z?entry=ttu&g_ep=EgoyMDI0MTAwOC4wIKXMDSoASAFQAw%3D%3D)
 
 
