@@ -10,6 +10,9 @@ from confluent_kafka.schema_registry import SchemaRegistryClient
 import avro.schema
 import avro.io
 import csv
+# import logging
+
+# logging.basicConfig(level=logging.DEBUG)
 
 @dataclass(frozen=True)
 class _AvroDS:
@@ -44,13 +47,19 @@ def _convert_to_pst(ts):
     return ps
 
 def _dump_message(msg):
-    target_keys = [
-        'ca-long-beach-058',
-        'ca-long-beach-055',
-        'ca-long-beach-052',
-        'ca-long-beach-049',
-        'ca-long-beach-046'
-    ]
+    # target_keys = [
+    #     'ca-long-beach-058',
+    #     'ca-long-beach-055',
+    #     'ca-long-beach-052',
+    #     'ca-long-beach-049',
+    #     'ca-long-beach-046'
+    # ]
+    target_keys = set(['ca-lbc-058',
+        'ca-lbc-055',
+        'ca-lbc-052',
+        'ca-lbc-049',
+        'ca-lbc-046'])
+        
     ts = msg.timestamp
 
     dmsg = datetime.datetime.fromtimestamp(int(round(ts / 1000, 0)), tz=datetime.timezone.utc)
@@ -66,7 +75,8 @@ def _dump_message(msg):
     if dt > 60:
         print(f"Skipping message for partition {msg.partition}, key: {msg.key}, value: {msg.value}, datetime: {dmsg}, now={now}, dt={dt})")
         return
-    file_exists = os.path.exists(f'./SPaT/{date}.csv')
+   
+    # print(f"Consumed message for partition {msg.partition}, key: {msg.key}, value: {msg.value}, datetime: {dmsg}, now={now}, dt={dt})")
     if msg.key in target_keys:
         print(f"Consumed message for partition {msg.partition}, key: {msg.key}, value: {msg.value}, datetime: {dmsg}, now={now}, dt={dt})")
         with open(f'./SPaT/{date}.csv', mode='a', newline='') as file:
