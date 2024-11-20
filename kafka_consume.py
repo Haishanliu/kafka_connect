@@ -105,6 +105,7 @@ def main(args):
                      'security_protocol':'SASL_SSL',
                      'key_deserializer': lambda keybytes: keybytes.decode('utf-8'),
                      'value_deserializer': lambda valuebytes: deserializer.decode_value(valuebytes),
+                     'api_version': (2, 5, 0),
                      }
 
     consumer = KafkaConsumer(topic, **consumer_conf)
