@@ -1,2 +1,5 @@
 ./setup_env_variables.sh
 ./SPaT
+spat.cmd
+setup_env_variable.cmd
+SPaT/
