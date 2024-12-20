@@ -78,17 +78,20 @@ def _dump_message(msg):
    
     # print(f"Consumed message for partition {msg.partition}, key: {msg.key}, value: {msg.value}, datetime: {dmsg}, now={now}, dt={dt})")
     if msg.key in target_keys:
-        print(f"Consumed message for partition {msg.partition}, key: {msg.key}, value: {msg.value}, datetime: {dmsg}, now={now}, dt={dt})")
-        with open(f'./SPaT/{date}.csv', mode='a', newline='') as file:
-            data = msg.value
-            data['phaseStart'] = _convert_to_pst(data['phaseStart'])
-            data['localZeroTime'] = _convert_to_pst(data['localZeroTime'])
-            writer = csv.DictWriter(file, fieldnames=data.keys())
+        try:
+            print(f"Consumed message for partition {msg.partition}, key: {msg.key}, value: {msg.value}, datetime: {dmsg}, now={now}, dt={dt})")
+            with open(f'./SPaT/{date}.csv', mode='a', newline='') as file:
+                data = msg.value
+                data['phaseStart'] = _convert_to_pst(data['phaseStart'])
+                data['localZeroTime'] = _convert_to_pst(data['localZeroTime'])
+                writer = csv.DictWriter(file, fieldnames=data.keys())
 
-            # Write the header only if the file doesn't exist
-            if file.tell() == 0:  
-                writer.writeheader()
-            writer.writerow(data)     
+                # Write the header only if the file doesn't exist
+                if file.tell() == 0:  
+                    writer.writeheader()
+                writer.writerow(data)
+        except:
+            print(f"FAILED!!! Consumed message for partition {msg.partition}, key: {msg.key}, value: {msg.value}, datetime: {dmsg}, now={now}, dt={dt})")
 
 def main(args):
     key = os.environ['SASL_USERNAME']
